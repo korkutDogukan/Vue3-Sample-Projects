@@ -56,6 +56,7 @@
           <div class="mainDiv">
             <div class="inputGroup">
               <input
+                @keydown.enter="guess"
                 type="text"
                 class="enterWord"
                 placeholder="Your Guess..."
@@ -79,7 +80,6 @@
 import axios from "axios";
 import { ref, computed } from "vue";
 
-const rondomNumb = ref(Math.random() * 10000);
 const word = ref({
   text: "",
   hint: "",
@@ -98,16 +98,25 @@ const myInterval = ref(null);
 const letterPoint = ref(0);
 const getLetters = ref(0);
 
-axios
-  .get(
-    "https://raw.githubusercontent.com/bilalozdemir/tr-word-list/master/files/words.json"
-  )
-  .then((response) => {
-    word.value.text = response.data[Math.round(rondomNumb.value)].word;
-    word.value.hint = response.data[Math.round(rondomNumb.value)].meanings[0];
+const getWord = () => {
+  const rondomNumb = ref(Math.random() * 10000);
+  axios
+    .get(
+      "https://raw.githubusercontent.com/bilalozdemir/tr-word-list/master/files/words.json"
+    )
+    .then((response) => {
+      if (response.data[Math.round(rondomNumb.value)].word.length > 20) {
+        return getWord();
+      } else {
+        word.value.text = response.data[Math.round(rondomNumb.value)].word;
+        word.value.hint =
+          response.data[Math.round(rondomNumb.value)].meanings[0];
+      }
+      // splitedWord.value = word.value.text.split("");
+    });
+};
 
-    // splitedWord.value = word.value.text.split("");
-  });
+getWord();
 
 myInterval.value = setInterval(() => {
   if (time.value == 0) {
@@ -133,6 +142,7 @@ function getUniqueRandomNumber(x) {
   }
 }
 const countLimit = ref(0);
+
 const getLetter = () => {
   countLimit.value++;
   if (countLimit.value <= word.value.text.length) {
@@ -143,12 +153,13 @@ const getLetter = () => {
     splitedWord.value[randomNumber.value] =
       word.value.text.split("")[randomNumber.value];
   } else {
+    userGuess.value = word.value.text;
     alert("Daha fazla kelime alamazsınız!!");
   }
 };
 
 const guess = () => {
-  const rondomNumb = ref(Math.random() * 10000);
+  // const rondomNumb = ref(Math.random() * 10000);
   if (userGuess.value.toLowerCase() == word.value.text.toLowerCase()) {
     correctWord.value++;
     isTrue.value = true;
@@ -158,17 +169,7 @@ const guess = () => {
     splitedWord.value = [];
     setTimeout(() => {
       userGuess.value = "";
-      axios
-        .get(
-          "https://raw.githubusercontent.com/bilalozdemir/tr-word-list/master/files/words.json"
-        )
-        .then((response) => {
-          word.value.text = response.data[Math.round(rondomNumb.value)].word;
-          word.value.hint =
-            response.data[Math.round(rondomNumb.value)].meanings[0];
-
-          // splitedWord.value = word.value.text.split("");
-        });
+      getWord();
     }, 600);
     setTimeout(() => {
       isTrue.value = null;
@@ -183,17 +184,7 @@ const guess = () => {
     userGuess.value = word.value.text;
     setTimeout(() => {
       userGuess.value = "";
-      axios
-        .get(
-          "https://raw.githubusercontent.com/bilalozdemir/tr-word-list/master/files/words.json"
-        )
-        .then((response) => {
-          word.value.text = response.data[Math.round(rondomNumb.value)].word;
-          word.value.hint =
-            response.data[Math.round(rondomNumb.value)].meanings[0];
-
-          // splitedWord.value = word.value.text.split("");
-        });
+      getWord();
     }, 600);
     setTimeout(() => {
       isTrue.value = null;
@@ -212,7 +203,7 @@ const checkWord = computed(() => {
 });
 
 const playAgain = () => {
-  const rondomNumb = ref(Math.random() * 10000);
+  // const rondomNumb = ref(Math.random() * 10000);
   setTimeout(() => {
     splitedWord.value = [];
     // usedNumber.value = [];
@@ -227,17 +218,7 @@ const playAgain = () => {
     isFinish.value = false;
     time.value = 60;
     userGuess.value = "";
-    axios
-      .get(
-        "https://raw.githubusercontent.com/bilalozdemir/tr-word-list/master/files/words.json"
-      )
-      .then((response) => {
-        word.value.text = response.data[Math.round(rondomNumb.value)].word;
-        word.value.hint =
-          response.data[Math.round(rondomNumb.value)].meanings[0];
-
-        // splitedWord.value = word.value.text.split("");
-      });
+    getWord();
   }, 400);
 };
 
@@ -246,9 +227,14 @@ const score = computed(() => {
     return 0;
   } else {
     if (wrongWord.value == 0) {
-      return (correctWord.value / 1) * 100 - letterPoint.value + 50;
+      return ((correctWord.value / 1) * 100 - letterPoint.value + 50).toFixed(
+        2
+      );
     } else {
-      return (correctWord.value / wrongWord.value) * 100 - letterPoint.value;
+      return (
+        (correctWord.value / wrongWord.value) * 100 -
+        letterPoint.value
+      ).toFixed(2);
     }
   }
 });
