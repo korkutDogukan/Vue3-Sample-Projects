@@ -48,8 +48,7 @@
           <div class="hintWord">
             <p class="hint">
               Hint ({{ letterCount }} Harf - {{ spaceCount }} Kelime ) :
-              {{ word.hint }} -
-              {{ word.text }}
+              {{ word.hint }}
             </p>
           </div>
           <hr />
@@ -68,6 +67,7 @@
             <div class="btnGroup">
               <button @click="guess" class="guessBtn">Guess</button>
               <button @click="getLetter" class="letterBtn">Letter</button>
+              <button @click="pass" class="letterBtn">Pass</button>
             </div>
             <button @click="playAgain" class="newGameBtn">New Game</button>
           </div>
@@ -160,7 +160,9 @@ const getLetter = () => {
 
 const guess = () => {
   // const rondomNumb = ref(Math.random() * 10000);
-  if (userGuess.value.toLowerCase() == word.value.text.toLowerCase()) {
+  const replacedUserGuess = userGuess.value.replace(/ +/g, "");
+  const repolacedWordText = word.value.text.replace(/ +/g, "");
+  if (replacedUserGuess.toLowerCase() == repolacedWordText.toLowerCase()) {
     correctWord.value++;
     isTrue.value = true;
     // usedNumber.value = [];
@@ -213,6 +215,7 @@ const playAgain = () => {
     wrongWord.value = 0;
     letterPoint.value = 0;
     getLetters.value = 0;
+    passCount.value = 0;
     isTrue.value = null;
     isStart.value = false;
     isFinish.value = false;
@@ -238,6 +241,21 @@ const score = computed(() => {
     }
   }
 });
+
+const passCount = ref(0);
+
+const pass = () => {
+  passCount.value++;
+  if (passCount.value > 3) {
+    alert("En fazla 3 kere pas geçebilirsiniz!!!");
+  } else {
+    countLimit.value = 0;
+    usedIndexes.value = [];
+    splitedWord.value = [];
+    userGuess.value = "";
+    getWord();
+  }
+};
 
 const spaceCount = computed(() => {
   const deneme = word.value.text.split("");
