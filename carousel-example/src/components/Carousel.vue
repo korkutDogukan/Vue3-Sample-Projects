@@ -13,58 +13,62 @@
 
     <div class="pagination">
       <span
-        v-for="(slide, index) in getSlideCount"
+        v-for="(pagi, index) in props.sliderImg.length"
         :key="index"
-        :class="{ active: index + 1 === currentSlide }"
-        @click="goToSlide(index)"
-      >
-      </span>
+        :class="{ active: currentSlide === index + 1 }"
+        @click="goSlide(index)"
+      ></span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-
+import { ref, defineProps } from "vue";
+const props = defineProps(["sliderImg"]);
 const currentSlide = ref(1);
-const getSlideCount = ref(null);
-const autoPlayEnabled = ref(true);
-const timeoutDuration = ref(5000);
-
-const nextSlide = () => {
-  if (currentSlide.value === getSlideCount.value) {
-    currentSlide.value = 1;
-    return;
-  }
-  currentSlide.value++;
-};
+const router = ref(true);
+const routerTime = ref(3000);
 
 const prevSlide = () => {
-  if (currentSlide.value === 1) {
-    currentSlide.value = 1;
+  router.value = false;
+  if (currentSlide.value < 2) {
+    currentSlide.value = 3;
+    return;
+  } else {
+    currentSlide.value--;
     return;
   }
-  currentSlide.value--;
 };
 
-const goToSlide = (index) => {
+const nextSlide = () => {
+  router.value = false;
+  if (currentSlide.value >= props.sliderImg.length) {
+    currentSlide.value = 1;
+    return;
+  } else {
+    currentSlide.value++;
+    return;
+  }
+};
+
+const goSlide = (index) => {
   currentSlide.value = index + 1;
 };
 
-const autoPlay = () => {
-  setInterval(() => {
-    nextSlide();
-  }, timeoutDuration.value);
-};
-
-if (autoPlayEnabled.value) {
-  autoPlay();
-}
-
-onMounted(() => {
-  getSlideCount.value = document.querySelectorAll(".slide").length;
-});
+setInterval(() => {
+  if (router.value) {
+    if (currentSlide.value >= props.sliderImg.length) {
+      currentSlide.value = 1;
+      return;
+    } else {
+      currentSlide.value++;
+      return;
+    }
+  }
+  router.value = true;
+}, routerTime.value);
 </script>
+
 
 <style lang="scss">
 .navigate {
@@ -88,7 +92,8 @@ onMounted(() => {
       border-radius: 50%;
       width: 40px;
       height: 40px;
-      background-color: #6347c7;
+      border: 1px solid #fff;
+      background-color: rgba(56, 133, 136, 0.8);
       color: #fff;
     }
   }
@@ -111,13 +116,14 @@ onMounted(() => {
     cursor: pointer;
     width: 20px;
     height: 20px;
+    border: 1px solid #fff;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: rgba(56, 133, 136, 0.8);
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   }
 
   .active {
-    background-color: #6347c7;
+    background-color: rgba(209, 221, 221, 0.8);
   }
 }
 </style>

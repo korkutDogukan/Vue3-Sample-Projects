@@ -1,9 +1,10 @@
 <template>
   <div class="home">
-    <Carousel class="carousel" v-slot="{ currentSlide }">
-      <Slide v-for="(slide, index) in carouselSlides" :key="index">
+    <Carousel :sliderImg="sliderImg" class="carousel" v-slot="{ currentSlide }">
+      <Slide v-for="(slider, index) in sliderImg" :key="index">
         <div v-show="currentSlide === index + 1" class="slide-info">
-          <img :src="require(`../assets/${slide}.jpg`)" alt="" />
+          <!-- <h3>{{ message }}</h3> -->
+          <img :src="require(`@/assets/${slider}.jpg`)" />
         </div>
       </Slide>
     </Carousel>
@@ -14,14 +15,25 @@
 import Carousel from "@/components/Carousel.vue";
 import Slide from "@/components/Slide.vue";
 import { ref } from "vue";
-const carouselSlides = ref(["bg-1", "bg-2", "bg-3"]);
+
+const sliderImg = ref(["bg-1", "bg-2", "bg-3"]);
+
+// const message = computed(() => {
+//   if (currentSlide === 1) {
+//     return "First Slide";
+//   } else if (currentSlide === 2) {
+//     return "Second Slide";
+//   } else {
+//     return "Third Slide";
+//   }
+// });
 </script>
 
 <style lang="scss">
 .carousel {
-  position: relative;
   max-height: 100vh;
   height: 100vh;
+  position: relative;
 
   .slide-info {
     position: absolute;
