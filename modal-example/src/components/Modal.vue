@@ -1,55 +1,37 @@
 <template>
   <transition name="modal-animation">
-    <div v-show="props.modalActive" class="modal">
-      <transition name="modal-animation-inner">
-        <div v-show="modalActive" class="modal-inner">
-          <i @click="close" class="far fa-times-circle"></i>
-          <slot></slot>
-          <button @click="close" type="button">Close</button>
+    <div v-show="props.modalOpen" class="modal">
+      <div class="innerModal">
+        <div class="closeIcon">
+          <i @click="$emit('closeModal')" class="fa-solid fa-circle-xmark"></i>
         </div>
-      </transition>
+        <slot></slot>
+        <button type="button" class="closeBtn" @click="$emit('closeModal')">
+          Close
+        </button>
+      </div>
     </div>
   </transition>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from "vue";
-const props = defineProps(["modalActive"]);
-const emit = defineEmits(["close"]);
-const close = () => {
-  emit("close");
-};
+import { defineProps } from "vue";
+
+const props = defineProps(["modalOpen"]);
 </script>
 
 <style lang="scss" scoped>
 .modal-animation-enter-active,
 .modal-animation-leave-active {
-  transition: opacity 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
+  transition: opacity 1s ease;
 }
 
 .modal-animation-enter-from,
 .modal-animation-leave-to {
   opacity: 0;
 }
-
-.modal-animation-inner-enter-active {
-  transition: all 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02) 0.15s;
-}
-
-.modal-animation-inner-leave-active {
-  transition: all 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
-}
-
-.modal-animation-inner-enter-from {
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-.modal-animation-inner-leave-to {
-  transform: scale(0.8);
-}
-
 .modal {
+  background-color: rgb(49, 34, 16);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,36 +40,49 @@ const close = () => {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(255, 255, 255, 0.7);
-
-  .modal-inner {
+  .innerModal {
+    width: 550px;
+    height: 250px;
+    border-radius: 20px;
+    background-color: rgb(241, 237, 237);
+    color: #333;
+    padding: 20px;
     position: relative;
-    max-width: 640px;
-    width: 80%;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    background-color: #fff;
-    padding: 64px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 4px 6px 2px 1px rgba(0, 0, 0, 0.3),
+      6px 4px 2px 1px rgba(0, 0, 0, 0.3);
 
-    i {
+    .closeIcon {
       position: absolute;
-      top: 15px;
-      right: 15px;
+      top: 10px;
+      right: 10px;
       font-size: 20px;
       cursor: pointer;
 
-      &:hover {
-        color: crimson;
+      i {
+        transition: all 0.4s;
+        &:hover {
+          color: rgb(161, 51, 51);
+        }
       }
     }
 
-    button {
-      padding: 20px 30px;
-      border: none;
-      font-size: 16px;
-      background-color: crimson;
+    .closeBtn {
       color: #fff;
+      font-size: 16px;
+      padding: 7px 12px;
+      border-radius: 10px;
+      border: 2px solid #333;
+      background-color: rgba(196, 63, 29, 0.986);
       cursor: pointer;
+
+      &:hover {
+        opacity: 0.9;
+      }
     }
   }
 }

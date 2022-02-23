@@ -1,49 +1,76 @@
 <template>
-  <div class="home">
-    <Modal @close="toggleModal" :modalActive="modalActive">
-      <div class="modal-content">
-        <h1>This is a Modal Header</h1>
-        <p>This is a modal message</p>
-      </div>
+  <div class="home" :class="backgroundColor">
+    <Modal :modalOpen="modalOpen" @closeModal="toggleModal">
+      <h2>This is a Modal Header</h2>
+      <p>This is a modal message</p>
     </Modal>
-    <button type="button" @click="toggleModal">Open Modal</button>
+    <button
+      v-show="modalOpen===false"
+      type="button"
+      class="openModal"
+      @click="toggleModal"
+    >
+      Open Modal
+    </button>
   </div>
 </template>
 
 <script setup>
 import Modal from "@/components/Modal.vue";
-import { ref } from "vue";
-const modalActive = ref(false);
+import { ref, computed } from "vue";
+
+const modalOpen = ref(false);
 
 const toggleModal = () => {
-  modalActive.value = !modalActive.value;
+  modalOpen.value = !modalOpen.value;
 };
+
+const backgroundColor = computed(() => {
+  if (modalOpen.value === true) {
+    return "openModalBG";
+  } else {
+    return false;
+  }
+});
 </script>
 
-
 <style lang="scss" scoped>
+.openModalBG {
+  background-color: rgb(49, 34, 16) !important;
+}
 .home {
-  background-color: rgba(0, 176, 234, 0.5);
+  width: 100%;
   height: 100vh;
+  position: relative;
+  background-color: rgb(156, 124, 84);
   display: flex;
   justify-content: center;
   align-items: center;
 
-  .modal-content {
-    display: flex;
-    flex-direction: column;
+  h2 {
+    font-size: 35px;
+    text-align: center;
+  }
 
-    h1,
-    p {
-      margin-bottom: 16px;
-    }
+  p {
+    font-size: 20px;
+    font-weight: 600;
+  }
 
-    h1 {
-      font-size: 32px;
-    }
+  .openModal {
+    padding: 15px 30px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    border: 2px solid rgb(250, 250, 250);
+    border-radius: 15px;
+    background-color: rgb(196, 131, 57);
+    box-shadow: 4px 6px 2px 1px rgba(0, 0, 0, 0.3),
+      6px 4px 2px 1px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
 
-    p {
-      font-size: 18px;
+    &:hover {
+      opacity: 0.85;
     }
   }
 }
