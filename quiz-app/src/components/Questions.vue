@@ -1,19 +1,59 @@
 <template>
   <div class="questions">
-    <p>When did Facebook launch?</p>
-    <ul>
-      <li><a href="">2005</a></li>
-      <li><a href="">2008</a></li>
-      <li><a href="">2003</a></li>
-      <li><a href="">2004</a></li>
-    </ul>
-    <button type="button" class="nextBtn">
+    <p>{{ result.question }}</p>
+    <label v-for="(answers, index) in result.answers" :key="index" :for="index">
+      <input
+        @click="answerQuestion(answers)"
+        :id="index"
+        type="radio"
+        :value="index"
+        :disabled="selectedAnswer"
+      />
+      {{ answers }}
+    </label>
+    <button v-show="selectedAnswer" type="button" class="nextBtn">
       Next <i class="fa-solid fa-angle-right"></i>
     </button>
   </div>
 </template>
 
 <script setup>
+import axios from "axios";
+import { ref, onMounted } from "vue";
+const result = ref({
+  question: null,
+  answers: [],
+});
+const correctAnswer = ref(null);
+const correctAnswerCount = ref(0);
+const incorrentAnswerCount = ref(0);
+const selectedAnswer = ref(false);
+const correctAnswerCheck = ref(false);
+
+const getQuestion = () => {
+  axios.get("https://opentdb.com/api.php?amount=1").then((get_response) => {
+    result.value.question = get_response.data.results[0].question;
+    get_response.data.results[0].incorrect_answers.forEach((element) => {
+      result.value.answers.push(element);
+    });
+    result.value.answers.push(get_response.data.results[0].correct_answer);
+    correctAnswer.value = get_response.data.results[0].correct_answer;
+  });
+};
+
+onMounted(() => {
+  getQuestion();
+});
+
+const answerQuestion = (answers) => {
+  selectedAnswer.value = true;
+  if (answers == correctAnswer.value) {
+    correctAnswerCount.value++;
+    correctAnswerCheck.value = true;
+    return;
+  }
+  incorrentAnswerCount.value++;
+};
 </script>
 
 <style lang="scss">
@@ -42,24 +82,19 @@
     font-weight: 700;
   }
 
-  ul {
-    li {
-      list-style: none;
-      margin: 18px 0;
-      border: 1px solid lightgray;
-      border-radius: 8px;
-      padding: 11px 21px;
-      background-color: rgb(251, 251, 251);
+  label {
+    border: 1px solid lightgray;
+    margin: 5px 0;
+    border-radius: 8px;
+    padding: 11px 21px;
+    background-color: rgb(251, 251, 251);
 
-      &:hover {
-        background-color: rgb(240, 240, 240);
-        cursor: pointer;
-      }
+    &:hover {
+      background-color: rgb(240, 240, 240);
+    }
 
-      a {
-        text-decoration: none;
-        color: #333;
-      }
+    input {
+      display: none;
     }
   }
 
@@ -77,6 +112,38 @@
     &:hover {
       opacity: 0.95;
     }
+  }
+}
+
+.wrongAnswer {
+  border: 1px solid lightgray;
+  margin: 5px 0;
+  border-radius: 8px;
+  padding: 11px 21px;
+  background-color: rgb(212, 158, 158);
+
+  &:hover {
+    background-color: rgb(192, 141, 141);
+  }
+
+  input {
+    display: none;
+  }
+}
+
+.correctAnswer {
+  border: 1px solid lightgray;
+  margin: 5px 0;
+  border-radius: 8px;
+  padding: 11px 21px;
+  background-color: rgb(91, 148, 100);
+
+  &:hover {
+    background-color: rgb(75, 121, 82);
+  }
+
+  input {
+    display: none;
   }
 }
 </style>
