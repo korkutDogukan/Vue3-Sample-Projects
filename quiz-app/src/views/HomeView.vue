@@ -1,12 +1,28 @@
 <template>
   <div class="home">
     <h1 class="title">Simple Quiz</h1>
-    <Questions></Questions>
+    <suspense>
+      <template #default>
+        <Questions></Questions>
+      </template>
+      <template #fallback>
+        <div>Loading...</div>
+      </template>
+    </suspense>
   </div>
 </template>
 
 <script setup>
-import Questions from "@/components/Questions.vue";
+import { ref, onErrorCaptured, defineAsyncComponent } from "@vue/runtime-core";
+// import Questions from "@/components/Questions.vue";
+const err = ref(null);
+const Questions = defineAsyncComponent(() =>
+  import("@/components/Questions.vue")
+);
+onErrorCaptured((e) => {
+  err.value = e;
+  return true;
+});
 </script>
 
 <style lang="scss">
