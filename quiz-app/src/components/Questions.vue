@@ -1,51 +1,51 @@
 <template>
-  <div>
-    <div v-if="!isFinish" class="questions">
-      <span class="timer">{{ currentQuestion }} / 10</span>
-      <p>{{ result.question }}</p>
-      <label
-        :for="index"
-        :class="[
-          index == answerIndex ? answerStyle : null,
-          index == correctIndex && selectedAnswer ? correct : null,
-        ]"
-        v-for="(answers, index) in result.answers"
-        :key="index"
+  <div v-if="!isFinish" class="questions">
+    <span class="counter">{{ currentQuestion }} / 10</span>
+    <p>{{ result.question }}</p>
+    <label
+      :for="index"
+      :class="[
+        index == answerIndex ? answerStyle : null,
+        index == correctIndex && selectedAnswer ? correct : null,
+      ]"
+      v-for="(answers, index) in result.answers"
+      :key="index"
+    >
+      <input
+        @click="answerQuestion(answers, index)"
+        :id="index"
+        type="radio"
+        :value="index"
+        :disabled="selectedAnswer"
+      />
+      {{ answers }}
+    </label>
+    <div v-show="selectedAnswer" class="infoSection">
+      <button
+        v-if="currentQuestion < 10"
+        @click="nextBtn"
+        type="button"
+        class="nextBtn"
       >
-        <input
-          @click="answerQuestion(answers, index)"
-          :id="index"
-          type="radio"
-          :value="index"
-          :disabled="selectedAnswer"
-        />
-        {{ answers }}
-      </label>
-      <div v-show="selectedAnswer" class="infoSection">
-        <button
-          v-if="currentQuestion < 10"
-          @click="nextBtn"
-          type="button"
-          class="nextBtn"
-        >
-          Next <i class="fa-solid fa-angle-right"></i>
-        </button>
-        <button v-else @click="finishBtn" type="button" class="finishBtn">
-          Finish <i class="fa-solid fa-flag-checkered"></i>
-        </button>
-      </div>
+        Next
+        <i class="fa-solid fa-angle-right"></i>
+      </button>
+      <button v-else @click="finishBtn" type="button" class="finishBtn">
+        Finish
+        <i class="fa-solid fa-flag-checkered"></i>
+      </button>
     </div>
-    <div v-else class="questions">
-      <h2>Results</h2>
-      <span style="color: rgb(140, 190, 148)"
-        >Number of Correct Answers : {{ correctAnswerCount }}</span
-      >
-      <span style="color: rgb(212, 158, 158)"
-        >Number of Incorrect Answers : {{ incorrentAnswerCount }}</span
-      >
-      <span>Accuracy Rate : % {{ accuracyRate }}</span>
-      <button @click="playAgain" class="playAgainBtn">Play Again</button>
-    </div>
+  </div>
+  <div v-else class="questions">
+    <h2>Results</h2>
+    <span style="color: rgb(140, 190, 148)"
+      >Number of Correct Answers : {{ correctAnswerCount }}</span
+    >
+    <span style="color: rgb(212, 158, 158)"
+      >Number of Incorrect Answers : {{ incorrentAnswerCount }}</span
+    >
+    <span>Accuracy Rate : % {{ accuracyRate }}</span>
+    <button @click="playAgain" class="playAgainBtn">Play Again</button>
   </div>
 </template>
 
@@ -161,7 +161,7 @@ const playAgain = () => {
   display: flex;
   flex-direction: column;
   position: relative;
-  gap: 10px;
+  gap: 20px;
   border: none;
   border-radius: 10px;
   --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
@@ -169,10 +169,10 @@ const playAgain = () => {
   box-shadow: var(--tw-ring-offset-shadow, 4px 4px #0000),
     var(--tw-ring-shadow, 4px 4px #0000), var(--tw-shadow);
 
-  .timer {
+  .counter {
     position: absolute;
-    top: 0;
-    right: 2px;
+    top: -10px;
+    right: 0;
     font-size: 18px;
     border-left: 2px solid rgb(182, 63, 42);
     border-bottom: 2px solid rgb(182, 63, 42);
